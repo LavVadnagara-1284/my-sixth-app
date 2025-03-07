@@ -1,11 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth/auth.service';
 
 @Controller('app')
 export class AppController {
-  constructor() {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Get('/login')
-  login(): string {
-    return 'Login Route successful';
+  @Post('/login')
+  @UseGuards(AuthGuard('local'))
+  login(@Request() req): string {
+    return this.authService.generateToken(req.user);;
+  }
+
+  @Get('/iosDeveloper')
+  @UseGuards(AuthGuard('jwt'))
+  iosDeveloperData(): string {
+    return 'This is private data for iOS Developer';
   }
 }
