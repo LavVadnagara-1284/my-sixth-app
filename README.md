@@ -1,3 +1,125 @@
+# JWT Role-Based Authentication API
+
+## Overview
+This project implements **JWT-based authentication with role-based access control (RBAC)** in a NestJS application. It allows users to log in using a username and password, receive a JWT token, and access different endpoints based on their assigned roles.
+
+## Features
+- User authentication using **JWT (JSON Web Token)**
+- Role-based access control with custom **Guards**
+- Secure endpoints that restrict access based on user roles
+- Implements **Passport.js** for authentication strategies
+- **Local Strategy** for username-password authentication
+- **JWT Strategy** for token verification
+
+## Technologies Used
+- **NestJS** (A progressive Node.js framework)
+- **Passport.js** (Authentication middleware)
+- **JWT (JSON Web Tokens)** (For secure authentication)
+
+---
+
+## Project Setup
+### Clone the repository
+```sh
+git clone <repo_url>
+cd my-sixth-app
+```
+
+The server will start at `http://localhost:3000`.
+
+---
+
+## Code Structure & Explanation
+
+### 1. **User Authentication & JWT Token Generation**
+- `local.strategy.ts`: Implements username-password authentication.
+- `jwt.strategy.ts`: Extracts and validates JWT from the request.
+- `auth.service.ts`: Handles JWT token generation.
+
+**Login Flow:**
+1. User sends a `POST /app/login` request with `username` and `password`.
+2. `LocalStrategy` validates the user.
+3. If valid, `AuthService` generates a JWT token.
+4. User receives the JWT token to use for protected endpoints.
+
+### 2. **Role-Based Access Control (RBAC)**
+- `constants.ts`: Defines available roles (`IOS_DEVELOPER`, `ANDROID_DEVELOPER`, `GAME_DEVELOPER`).
+- `role.guard.ts`: Custom **Guard** that checks the user's role before allowing access to endpoints.
+
+**Access Control Flow:**
+1. A user makes a request to a protected endpoint.
+2. `JwtStrategy` verifies the JWT token.
+3. `RoleGuard` checks if the user has the correct role.
+4. If authorized, access is granted; otherwise, an error is returned.
+
+### 3. **User Management**
+- `user.service.ts`: Contains a hardcoded list of users with different roles.
+- `user.entity.ts`: Defines the **User** model.
+
+---
+
+## API Endpoints
+
+### 1. **User Login (Generate JWT Token)**
+#### Request:
+```sh
+POST /app/login
+Content-Type: application/json
+
+{
+  "username": "User1",
+  "password": "password1"
+}
+```
+#### Response:
+```json
+{
+  "access_token": "<JWT_TOKEN>"
+}
+```
+
+### 2. **Access IOS Developer Data (Protected Route)**
+#### Request:
+```sh
+GET /app/iosDeveloper
+Authorization: Bearer <JWT_TOKEN>
+```
+#### Response:
+```json
+{
+  "message": "This is private data for IOS Developer",
+  "user": { "username": "User1", "role": "Ios-Developer" }
+}
+```
+
+### 3. **Access Android Developer Data (Protected Route)**
+#### Request:
+```sh
+GET /app/androidDeveloper
+Authorization: Bearer <JWT_TOKEN>
+```
+#### Response:
+```json
+{
+  "message": "This is private data for Android Developer",
+  "user": { "username": "User2", "role": "Android-Developer" }
+}
+```
+
+---
+
+## Security Considerations
+- The secret key (`the-secret-key`) should be stored securely (e.g., in environment variables).
+- Passwords should be hashed before storing in a database.
+- Token expiration should be set for better security.
+
+---
+
+## Future Enhancements
+- Connect to a real database (e.g., PostgreSQL, MongoDB)
+- Implement password hashing using `bcrypt`
+- Add refresh token functionality
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
